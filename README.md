@@ -1,4 +1,4 @@
-#Projektbeschreibung
+# Projektbeschreibung
 
 Mit der Web-Applikation "Drum Tracker" haben wir ein Werkzeug, das Nutzer ermöglicht, ihre persönliche Ziele festzulegen und ihren Lernfortschritt in verschiedenen Bereichen zu verfolgen wenn sie ihr Instrument üben. Dies kann für eine Vorbereitung für ein Wettspiel sein, das Erarbeiten einer neuen Komposition oder das üben als Verein für die Basler Fasnacht oder einem Konzert
 
