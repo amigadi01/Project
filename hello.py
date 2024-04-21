@@ -14,6 +14,10 @@ def userpage():
 def about():
     return render_template("about.html")
 
+@app.route('/progress/')
+def progress():
+    return render_template("progress.html")
+
 
 app.run(debug=True, port=3000)
 
