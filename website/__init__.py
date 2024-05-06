@@ -1,8 +1,8 @@
 from flask import Flask
-from flask_sqlalchemy import SQLALchemy 
+from flask_sqlalchemy import SQLALchemy, SQLAlchemy 
 from os import path
 
-db = SQAlchemy()
+db = SQLAlchemy()
 DB_NAME = "database.db"
 
 def create_app():
