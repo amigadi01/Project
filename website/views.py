@@ -6,6 +6,23 @@ import json
 
 views = Blueprint('views', __name__)
 
+termin_daten = [
+     {
+            "title": 'event1',
+            "start": '2024-04-01'
+    },
+    {
+            "title": 'Ami Study',
+            "start": '2024-05-05T15:30:00',
+            "end": '2024-05-07'
+    },
+    {
+            "title": 'event3',
+            "start": '2024-01-09T12:30:00',
+            "allDay": False
+    }
+]
+
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
@@ -31,22 +48,10 @@ def delete_note():
         db.session.commit()
     return jsonify({})
 
+@views.route('/calendar')
+def calendar():
+    return render_template('calendar.html')
+
 @views.route('/termine')
 def termine():
-    termin_daten = [
-        {
-            "title": 'event1',
-            "start": '2024-04-01'
-        },
-        {
-            "title": 'Ami Study',
-            "start": '2024-05-05T15:30:00',
-            "end": '2024-05-07'
-        },
-        {
-            "title": 'event3',
-            "start": '2024-01-09T12:30:00',
-            "allDay": False
-        }
-    ]
     return jsonify(termin_daten)
