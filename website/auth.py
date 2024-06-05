@@ -33,7 +33,7 @@ def logout():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-    if request.method == ['POST']:
+    if request.method == 'POST':  # Korrektur hier
         email = request.form.get('email')
         first_name = request.form.get('firstName')
         password1 = request.form.get('password1')
