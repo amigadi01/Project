@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
-from .models import Note  # Ensure Note model is correctly imported
-from . import db  # Import db correctly
+from .models import Note
+from . import db
 import json
 
 views = Blueprint('views', __name__)
@@ -10,26 +10,43 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     if request.method == 'POST':
-        note = request.form.get('note')  # gets note from html
-
+        note = request.form.get('note')
         if len(note) < 1:
             flash('Note is too short!', category='error')
         else:
-            new_note = Note(data=note, user_id=current_user.id)  # providing the schema for the note
-            db.session.add(new_note)  # adding the note to the database
+            new_note = Note(data=note, user_id=current_user.id)
+            db.session.add(new_note)
             db.session.commit()
             flash('Note added!', category='success')
-
     return render_template('home.html', user=current_user)
 
 @views.route('/delete-note', methods=['POST'])
+@login_required
 def delete_note():
-    note = json.loads(request.data)  # this function expects a JSON from the INDEX.js file
-    noteId = note['noteId']
-    note = Note.query.get(noteId)
-    if note:
-        if note.user_id == current_user.id:
-            db.session.delete(note)
-            db.session.commit()
-
+    note = json.loads(request.data)
+    note_id = note['noteId']
+    note = Note.query.get(note_id)
+    if note and note.user_id == current_user.id:
+        db.session.delete(note)
+        db.session.commit()
     return jsonify({})
+
+@views.route('/termine')
+def termine():
+    termin_daten = [
+        {
+            "title": 'event1',
+            "start": '2024-04-01'
+        },
+        {
+            "title": 'Ami Study',
+            "start": '2024-05-05T15:30:00',
+            "end": '2024-05-07'
+        },
+        {
+            "title": 'event3',
+            "start": '2024-01-09T12:30:00',
+            "allDay": False
+        }
+    ]
+    return jsonify(termin_daten)
