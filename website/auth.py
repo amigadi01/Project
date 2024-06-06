@@ -64,7 +64,7 @@ tasks = ['Buy groceries', 'Complete coding tutorial', 'Walk the dog']
 
 @auth.route('/todo')
 def todo():
-    return render_template('todo.html', tasks=tasks)
+    return render_template('todo.html', tasks=tasks, user=current_user)
 
 @auth.route('/add', methods=['POST'])
 def add_task():
@@ -72,3 +72,4 @@ def add_task():
     if new_task:
         tasks.append(new_task)
     return redirect(url_for('auth.todo'))
+

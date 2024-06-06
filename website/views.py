@@ -50,7 +50,7 @@ def delete_note():
 
 @views.route('/calendar')
 def calendar():
-    return render_template('calendar.html')
+    return render_template('calendar.html', user=current_user)
 
 @views.route('/termine')
 def termine():
