@@ -1,25 +1,83 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% block title %}Calendar{% endblock %} 
+{% block title %}Calendar{% endblock %}
 
 {% block content %}
-<h1>Calendar</h1>
-<div id='calendar'></div>
+<div class="container-fluid">
+   <div class="row row-eq-height">
+      <div class="col-md-3">
+         <div class="iq-card calender-small">
+            <div class="iq-card-body">
+               <input type="text" class="flatpicker d-none">
+            </div>
+         </div>
+         <div class="iq-card">
+            <div class="iq-card-header d-flex justify-content-between">
+               <div class="iq-header-title">
+               </div>
+               <div class="iq-card-header-toolbar d-flex align-items-center">
+                  <a href="#"><i class="fa fa-plus  mr-0" aria-hidden="true"></i></a>
+               </div>
+            </div>
+            <div class="iq-card-body">
+            </div>
+         </div>
+         <div class="iq-card">
+            <div class="iq-card-header d-flex justify-content-between">
+               <div class="iq-header-title">
+                  <h4 class="card-title">Deine Termine</h4>
+               </div>
+            </div>
+            <div class="iq-card-body">
+               <ul class="m-0 p-0 today-schedule">
+                  <li class="d-flex">
+                     <div class="schedule-icon"><i class="ri-checkbox-blank-circle-fill text-primary"></i></div>
+                     <div class="schedule-text"> <span>Web Design</span>
+                     <span>09:00 to 12:00</span></div>
+                  </li>
+                  <li class="d-flex">
+                     <div class="schedule-icon"><i class="ri-checkbox-blank-circle-fill text-success"></i></div>
+                     <div class="schedule-text"> <span>Participate in Design</span>
+                     <span>09:00 to 12:00</span></div>
+                  </li>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <div class="col-md-9">
+         <div class="iq-card">
+            <div class="iq-card-header d-flex justify-content-between">
+               <div class="iq-header-title">
+                  <h4 class="card-title">Kalender</h4>
+                  <h6> Trage deine Übungsstunden ein</h6>
+               </div>
+               <div class="iq-card-header-toolbar d-flex align-items-center">
+                  <a href="#" class="btn btn-primary"><i class="ri-add-line mr-2"></i>Book Appointment</a>
+               </div>
+            </div>
+            <div class="iq-card-body">
+               <div id='calendar1'></div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+<!-- Full calendar -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js'></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            firstDay: 1,
-            locale: 'de',
-            events: '/termine'
-        });
-        calendar.render();
-    });
+   document.addEventListener('DOMContentLoaded', function() {
+       var calendarEl = document.getElementById('calendar1');
+       var calendar = new FullCalendar.Calendar(calendarEl, {
+           initialView: 'dayGridMonth',
+           locale: 'de',
+           events: '/termine'  // Adjust this URL if necessary
+       });
+       calendar.render();
+   });
 </script>
 {% endblock %}
-

@@ -1,23 +1,84 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% block title %}To Do{% endblock %} 
+{% block title %}To Do{% endblock %}
 
 {% block content %}
-<h1>Welcome to My To-Do List App!</h1>
+<div class="container-fluid">
+   <div class="row">
+      <!-- To Do List -->
+      <div class="col-md-6">
+         <h1>To Do List</h1>
+         <ul class="list-group">
+            {% for task in tasks %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+               {{ task.description }}
+               <button type="button" class="btn btn-danger btn-sm" onClick="deleteTask('{{ task.id }}')">
+                  <span aria-hidden="true">&times;</span>
+               </button>
+            </li>
+            {% endfor %}
+         </ul>
+         <form method="POST" action="{{ url_for('auth.add_task') }}" class="mt-4">
+            <div class="form-group">
+               <label for="newTask">Add Task:</label>
+               <input type="text" id="newTask" name="newTask" class="form-control" required>
+            </div>
+            <div align="center">
+               <button type="submit" class="btn btn-primary">Add Task</button>
+            </div>
+         </form>
+      </div>
+      <!-- Notes -->
+      <div class="col-md-6">
+         <h1>Notes</h1>
+         <ul class="list-group list-group-flush" id="notes">
+            {% for note in user.notes %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+               {{ note.data }}
+               <button type="button" class="btn btn-danger btn-sm" onClick="deleteNote('{{ note.id }}')">
+                  <span aria-hidden="true">&times;</span>
+               </button>
+            </li>
+            {% endfor %}
+         </ul>
+         <form method="POST" class="mt-4">
+            <div class="form-group">
+               <label for="note">Add Note:</label>
+               <textarea name="note" id="note" class="form-control" required></textarea>
+            </div>
+            <div align="center">
+               <button type="submit" class="btn btn-primary">Add Note</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+{% endblock %}
 
-<ul>
-    {% for task in tasks %}
-        <li>{{ task.description }}
-        <button type="button" class="close" onClick="deleteTask('{{ task.id }}')">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        </li>
-    {% endfor %}
-</ul>
+{% block javascript %}
+<script>
+   function deleteTask(taskId) {
+       fetch("/delete-task", {
+           method: "POST",
+           headers: {
+               "Content-Type": "application/json"
+           },
+           body: JSON.stringify({ taskId: taskId }),
+       }).then((_res) => {
+           window.location.href = "/todo";
+       });
+   }
 
-<form method="POST" action="{{ url_for('auth.add_task') }}">
-    <label for="newTask">Add Task:</label>
-    <input type="text" id="newTask" name="newTask" required>
-    <button type="submit">Add</button>
-</form>
+   function deleteNote(noteId) {
+       fetch("/delete-note", {
+           method: "POST",
+           headers: {
+               "Content-Type": "application/json"
+           },
+           body: JSON.stringify({ noteId: noteId }),
+       }).then((_res) => {
+           window.location.href = "/todo";
+       });
+   }
+</script>
 {% endblock %}
