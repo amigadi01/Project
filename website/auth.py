@@ -59,3 +59,16 @@ def sign_up():
             return redirect(url_for('views.home'))
 
     return render_template('sign_up.html', user=current_user)
+
+tasks = ['Buy groceries', 'Complete coding tutorial', 'Walk the dog']
+
+@auth.route('/todo')
+def todo():
+    return render_template('todo.html', tasks=tasks)
+
+@auth.route('/add', methods=['POST'])
+def add_task():
+    new_task = request.form.get('newTask')
+    if new_task:
+        tasks.append(new_task)
+    return redirect(url_for('auth.todo'))

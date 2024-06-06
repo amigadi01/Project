@@ -55,3 +55,7 @@ def calendar():
 @views.route('/termine')
 def termine():
     return jsonify(termin_daten)
+
+@views.route('/todo')
+def todo():
+    return render_template('todo.html', user=current_user)
