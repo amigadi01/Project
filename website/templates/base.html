@@ -57,6 +57,17 @@
                 window.location.href = "/";
             });
         }
+        function deleteTask(taskId) {
+            fetch("/delete-task", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ taskId: taskId }),
+            }).then((_res) => {
+                window.location.href = "/todo";
+            });
+        }
     </script>
     {% endblock %}
 </body>

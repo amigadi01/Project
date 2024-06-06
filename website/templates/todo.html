@@ -7,7 +7,11 @@
 
 <ul>
     {% for task in tasks %}
-        <li>{{ task }}</li>
+        <li>{{ task.description }}
+        <button type="button" class="close" onClick="deleteTask('{{ task.id }}')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </li>
     {% endfor %}
 </ul>
 
@@ -17,5 +21,3 @@
     <button type="submit">Add</button>
 </form>
 {% endblock %}
-
-

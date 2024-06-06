@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
@@ -60,16 +60,28 @@ def sign_up():
 
     return render_template('sign_up.html', user=current_user)
 
-tasks = ['Buy groceries', 'Complete coding tutorial', 'Walk the dog']
+# Globale Definition von tasks
+tasks = [{'id': 1, 'description': 'Buy groceries'}, {'id': 2, 'description': 'Complete coding tutorial'}, {'id': 3, 'description': 'Walk the dog'}]
 
 @auth.route('/todo')
+@login_required
 def todo():
     return render_template('todo.html', tasks=tasks, user=current_user)
 
 @auth.route('/add', methods=['POST'])
+@login_required
 def add_task():
     new_task = request.form.get('newTask')
     if new_task:
-        tasks.append(new_task)
+        task_id = len(tasks) + 1
+        tasks.append({'id': task_id, 'description': new_task})
     return redirect(url_for('auth.todo'))
+
+@auth.route('/delete-task', methods=['POST'])
+@login_required
+def delete_task():
+    task_id = request.get_json().get('taskId')
+    global tasks
+    tasks = [task for task in tasks if task['id'] != int(task_id)]
+    return jsonify({})
 
