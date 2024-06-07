@@ -6,7 +6,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your_secret_key'  # Ersetze durch deinen tatsächlichen geheimen Schlüssel
+    app.config['SECRET_KEY'] = 'your_secret_key'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///your_database.db'
 
     db.init_app(app)
@@ -22,10 +22,10 @@ def create_app():
         return User.query.get(int(user_id))
 
     from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/')
+    app.register_blueprint(auth_blueprint)
 
     from .views import views as views_blueprint
-    app.register_blueprint(views_blueprint, url_prefix='/')
+    app.register_blueprint(views_blueprint)
 
     with app.app_context():
         db.create_all()

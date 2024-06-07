@@ -1,27 +1,10 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Note, Task
+from .models import Note, Task, Goal
 from . import db
 import json
 
 views = Blueprint('views', __name__)
-
-termin_daten = [
-    {
-        "title": 'event1',
-        "start": '2024-04-01'
-    },
-    {
-        "title": 'Ami Study',
-        "start": '2024-05-05T15:30:00',
-        "end": '2024-05-07'
-    },
-    {
-        "title": 'event3',
-        "start": '2024-01-09T12:30:00',
-        "allDay": False
-    }
-]
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
@@ -48,7 +31,22 @@ def calendar():
 @views.route('/termine')
 @login_required
 def termine():
-    return jsonify(termin_daten)
+    return jsonify([
+        {
+            "title": 'event1',
+            "start": '2024-04-01'
+        },
+        {
+            "title": 'Ami Study',
+            "start": '2024-05-05T15:30:00',
+            "end": '2024-05-07'
+        },
+        {
+            "title": 'event3',
+            "start": '2024-01-09T12:30:00',
+            "allDay": False
+        }
+    ])
 
 @views.route('/todo', methods=['GET', 'POST'])
 @login_required
@@ -80,4 +78,35 @@ def delete_task():
         db.session.delete(task)
         db.session.commit()
         flash('Task deleted!', category='success')
+    return jsonify({"success": True})
+
+@views.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+
+        if not title or not description:
+            flash('Title and description are required!', category='error')
+        else:
+            new_goal = Goal(title=title, description=description, user_id=current_user.id)
+            db.session.add(new_goal)
+            db.session.commit()
+            flash('Goal added successfully!', category='success')
+        return redirect(url_for('views.profile'))
+
+    goals = Goal.query.filter_by(user_id=current_user.id).all()
+    return render_template('profile.html', user=current_user, goals=goals)
+
+@views.route('/delete-goal', methods=['POST'])
+@login_required
+def delete_goal():
+    goal = json.loads(request.data)
+    goal_id = goal['goalId']
+    goal = Goal.query.get(goal_id)
+    if goal and goal.user_id == current_user.id:
+        db.session.delete(goal)
+        db.session.commit()
+        flash('Goal deleted!', category='success')
     return jsonify({"success": True})
