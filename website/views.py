@@ -1,25 +1,25 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Note
+from .models import Note, Task
 from . import db
 import json
 
 views = Blueprint('views', __name__)
 
 termin_daten = [
-     {
-            "title": 'event1',
-            "start": '2024-04-01'
+    {
+        "title": 'event1',
+        "start": '2024-04-01'
     },
     {
-            "title": 'Ami Study',
-            "start": '2024-05-05T15:30:00',
-            "end": '2024-05-07'
+        "title": 'Ami Study',
+        "start": '2024-05-05T15:30:00',
+        "end": '2024-05-07'
     },
     {
-            "title": 'event3',
-            "start": '2024-01-09T12:30:00',
-            "allDay": False
+        "title": 'event3',
+        "start": '2024-01-09T12:30:00',
+        "allDay": False
     }
 ]
 
@@ -46,7 +46,8 @@ def delete_note():
     if note and note.user_id == current_user.id:
         db.session.delete(note)
         db.session.commit()
-    return jsonify({})
+        flash('Note deleted!', category='success')
+    return jsonify({"success": True})
 
 @views.route('/calendar')
 def calendar():
@@ -56,39 +57,34 @@ def calendar():
 def termine():
     return jsonify(termin_daten)
 
-@views.route('/todo')
+@views.route('/todo', methods=['GET', 'POST'])
+@login_required
 def todo():
-    return render_template('todo.html', user=current_user)
+    if request.method == 'POST':
+        if 'newTask' in request.form:
+            new_task = Task(description=request.form.get('newTask'), user_id=current_user.id)
+            db.session.add(new_task)
+            db.session.commit()
+            flash('Task added successfully!', category='success')
+        elif 'note' in request.form:
+            new_note = Note(data=request.form.get('note'), user_id=current_user.id)
+            db.session.add(new_note)
+            db.session.commit()
+            flash('Note added successfully!', category='success')
+        return redirect(url_for('views.todo'))
 
-tasks = [{"id": 1, "description": "Task 1"}, {"id": 2, "description": "Task 2"}]
-notes = [{"id": 1, "data": "Note 1"}, {"id": 2, "data": "Note 2"}]
-
-@views.route('/todo')
-def todo():
-    return render_template('todo.html', tasks=tasks, notes=notes)
-
-@views.route('/add-task', methods=['POST'])
-def add_task():
-    new_task = request.form.get('newTask')
-    tasks.append({"id": len(tasks) + 1, "description": new_task})
-    return redirect(url_for('views.todo'))
-
-@views.route('/add-note', methods=['POST'])
-def add_note():
-    new_note = request.form.get('note')
-    notes.append({"id": len(notes) + 1, "data": new_note})
-    return redirect(url_for('views.todo'))
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    notes = Note.query.filter_by(user_id=current_user.id).all()
+    return render_template('todo.html', tasks=tasks, user=current_user, notes=notes)
 
 @views.route('/delete-task', methods=['POST'])
+@login_required
 def delete_task():
-    task_id = request.json.get('taskId')
-    global tasks
-    tasks = [task for task in tasks if task['id'] != int(task_id)]
-    return jsonify({"success": True})
-
-@views.route('/delete-note', methods=['POST'])
-def delete_note():
-    note_id = request.json.get('noteId')
-    global notes
-    notes = [note for note in notes if note['id'] != int(note_id)]
+    task = json.loads(request.data)
+    task_id = task['taskId']
+    task = Task.query.get(task_id)
+    if task and task.user_id == current_user.id:
+        db.session.delete(task)
+        db.session.commit()
+        flash('Task deleted!', category='success')
     return jsonify({"success": True})
