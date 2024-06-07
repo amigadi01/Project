@@ -26,15 +26,6 @@ termin_daten = [
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    if request.method == 'POST':
-        note = request.form.get('note')
-        if len(note) < 1:
-            flash('Note is too short!', category='error')
-        else:
-            new_note = Note(data=note, user_id=current_user.id)
-            db.session.add(new_note)
-            db.session.commit()
-            flash('Note added!', category='success')
     return render_template('home.html', user=current_user)
 
 @views.route('/delete-note', methods=['POST'])
@@ -50,10 +41,12 @@ def delete_note():
     return jsonify({"success": True})
 
 @views.route('/calendar')
+@login_required
 def calendar():
     return render_template('calendar.html', user=current_user)
 
 @views.route('/termine')
+@login_required
 def termine():
     return jsonify(termin_daten)
 
