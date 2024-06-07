@@ -5,13 +5,19 @@
     <h1 class="text-center">Welcome to the Home Page</h1>
     <div class="row justify-content-center mt-4">
         <div class="col-md-4 text-center">
-            <a href="{{ url_for('views.todo') }}" class="btn btn-primary btn-lg btn-block">To-Do List</a>
+            <a href="{{ url_for('views.todo') }}" class="btn btn-primary btn-lg btn-block">
+                <i class="fas fa-tasks"></i> To-Do List
+            </a>
         </div>
         <div class="col-md-4 text-center">
-            <a href="{{ url_for('views.calendar') }}" class="btn btn-primary btn-lg btn-block">Calendar</a>
+            <a href="{{ url_for('views.calendar') }}" class="btn btn-primary btn-lg btn-block">
+                <i class="fas fa-calendar-alt"></i> Calendar
+            </a>
         </div>
         <div class="col-md-4 text-center">
-            <a href="{{ url_for('views.termine') }}" class="btn btn-primary btn-lg btn-block">Appointments</a>
+            <a href="{{ url_for('views.termine') }}" class="btn btn-primary btn-lg btn-block">
+                <i class="fas fa-calendar-check"></i> Appointments
+            </a>
         </div>
     </div>
 </div>
