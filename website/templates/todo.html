@@ -18,7 +18,7 @@
             </li>
             {% endfor %}
          </ul>
-         <form method="POST" action="{{ url_for('auth.add_task') }}" class="mt-4">
+         <form method="POST" action="{{ url_for('views.add_task') }}" class="mt-4">
             <div class="form-group">
                <label for="newTask">Add Task:</label>
                <input type="text" id="newTask" name="newTask" class="form-control" required>
@@ -82,4 +82,3 @@
    }
 </script>
 {% endblock %}
-

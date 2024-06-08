@@ -135,3 +135,14 @@ def edit_profile():
 @login_required
 def wettspiel():
     return render_template('wettspiel.html', user=current_user)
+
+@views.route('/add', methods=['POST'])
+@login_required
+def add_task():
+    new_task = request.form.get('newTask')
+    if new_task:
+        task = Task(description=new_task, user_id=current_user.id)
+        db.session.add(task)
+        db.session.commit()
+        flash('Task added successfully!', category='success')
+    return redirect(url_for('views.todo'))
