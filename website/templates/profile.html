@@ -5,6 +5,16 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Profile</h1>
+    
+    <!-- User Information Section -->
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <h2 class="card-title">{{ user.name }}</h2>
+            <p class="card-text">{{ user.description }}</p>
+        </div>
+    </div>
+
+    <!-- Personal Goals Section -->
     <h2 class="text-center mb-4">Personal Goals</h2>
     <div class="row">
         {% for goal in goals %}
@@ -21,6 +31,8 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- Add New Goal Section -->
     <div class="card mt-4">
         <div class="card-body">
             <h5 class="card-title">Add a New Goal</h5>
@@ -33,7 +45,7 @@
                     <label for="description">Goal Description:</label>
                     <textarea name="description" id="description" class="form-control" required></textarea>
                 </div>
-                <div align="center">
+                <div class="text-center">
                     <button type="submit" class="btn btn-primary">Add Goal</button>
                 </div>
             </form>

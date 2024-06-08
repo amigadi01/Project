@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from .models import Note, Task, Goal
+from .models import Note, Task, Goal, User  # Stelle sicher, dass das User-Modell importiert ist
 from . import db
 import json
 
@@ -110,3 +110,23 @@ def delete_goal():
         db.session.commit()
         flash('Goal deleted!', category='success')
     return jsonify({"success": True})
+
+@views.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        description = request.form.get('description')
+
+        if not name or not email or not description:
+            flash('All fields are required!', category='error')
+        else:
+            current_user.name = name
+            current_user.email = email
+            current_user.description = description
+            db.session.commit()
+            flash('Profile updated successfully!', category='success')
+        return redirect(url_for('views.edit_profile'))
+
+    return render_template('edit_profile.html', user=current_user)
