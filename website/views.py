@@ -130,3 +130,8 @@ def edit_profile():
         return redirect(url_for('views.edit_profile'))
 
     return render_template('edit_profile.html', user=current_user)
+
+@views.route('/wettspiel')
+@login_required
+def wettspiel():
+    return render_template('wettspiel.html', user=current_user)

@@ -29,11 +29,12 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash('You have been logged out.', category='success')
     return redirect(url_for('auth.login'))
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-    if request.method == 'POST':  # Korrektur hier
+    if request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('firstName')
         password1 = request.form.get('password1')
@@ -59,16 +60,3 @@ def sign_up():
             return redirect(url_for('views.home'))
 
     return render_template('sign_up.html', user=current_user)
-
-tasks = ['Buy groceries', 'Complete coding tutorial', 'Walk the dog']
-
-@auth.route('/todo')
-def todo():
-    return render_template('todo.html', tasks=tasks, user=current_user)
-
-@auth.route('/add', methods=['POST'])
-def add_task():
-    new_task = request.form.get('newTask')
-    if new_task:
-        tasks.append(new_task)
-    return redirect(url_for('auth.todo'))
