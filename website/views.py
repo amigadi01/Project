@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from .models import Note, Task, Goal, User  # Stelle sicher, dass das User-Modell importiert ist
+from .models import Note, Task, Goal, User, Event  # Stelle sicher, dass das Event-Modell importiert ist
 from . import db
 import json
 
@@ -31,22 +31,44 @@ def calendar():
 @views.route('/termine')
 @login_required
 def termine():
-    return jsonify([
-        {
-            "title": 'event1',
-            "start": '2024-04-01'
-        },
-        {
-            "title": 'Ami Study',
-            "start": '2024-05-05T15:30:00',
-            "end": '2024-05-07'
-        },
-        {
-            "title": 'event3',
-            "start": '2024-01-09T12:30:00',
-            "allDay": False
+    # Diese Route sollte Events aus der Datenbank abrufen
+    events = Event.query.filter_by(user_id=current_user.id).all()
+    event_list = []
+    for event in events:
+        event_data = {
+            "id": event.id,
+            "title": event.title,
+            "start": event.start.isoformat(),
+            "end": event.end.isoformat() if event.end else None
         }
-    ])
+        event_list.append(event_data)
+    return jsonify(event_list)
+
+@views.route('/add-event', methods=['POST'])
+@login_required
+def add_event():
+    data = request.get_json()
+    new_event = Event(
+        title=data['title'],
+        start=data['start'],
+        end=data.get('end', None),
+        user_id=current_user.id
+    )
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify(id=new_event.id, title=new_event.title, start=new_event.start, end=new_event.end)
+
+@views.route('/delete-event', methods=['DELETE'])
+@login_required
+def delete_event():
+    data = request.get_json()
+    event_id = data['id']
+    event = Event.query.get(event_id)
+    if event and event.user_id == current_user.id:
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify(success=True)
+    return jsonify(success=False)
 
 @views.route('/todo', methods=['GET', 'POST'])
 @login_required

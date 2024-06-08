@@ -3,84 +3,85 @@
 {% block title %}Calendar{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-   <div class="row row-eq-height">
-      <div class="col-md-3">
-         <div class="iq-card calender-small">
-            <div class="iq-card-body">
-               <input type="text" class="flatpicker d-none">
+<div class="container-fluid mt-5 background d-flex align-items-center justify-content-center">
+    <div class="content text-center">
+        <h1 class="mb-4">Kalender</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <input type="text" class="flatpicker d-none">
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title"><i class="fas fa-calendar-check"></i> Deine Termine</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="m-0 p-0 today-schedule">
+                            <li class="d-flex">
+                                <div class="schedule-icon"><i class="ri-checkbox-blank-circle-fill text-primary"></i></div>
+                                <div class="schedule-text"><span>Web Design</span><span>09:00 to 12:00</span></div>
+                            </li>
+                            <li class="d-flex">
+                                <div class="schedule-icon"><i class="ri-checkbox-blank-circle-fill text-success"></i></div>
+                                <div class="schedule-text"><span>Participate in Design</span><span>09:00 to 12:00</span></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-         </div>
-         <div class="iq-card">
-            <div class="iq-card-header d-flex justify-content-between">
-               <div class="iq-header-title">
-                  <h4 class="card-title">Deine Termine</h4>
-               </div>
+            <div class="col-md-9">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h1 class="card-title"><i class="fas fa-calendar-alt"></i> Kalender</h1>
+                            <h3>Trage deine Übungsstunden ein</h3>
+                        </div>
+                        <div class="card-header-toolbar d-flex align-items-center">
+                            <button class="btn btn-primary" id="add-event-btn"><i class="ri-add-line mr-2"></i>Event hinzufügen</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id='calendar1'></div>
+                    </div>
+                </div>
             </div>
-            <div class="iq-card-body">
-               <ul class="m-0 p-0 today-schedule">
-                  <li class="d-flex">
-                     <div class="schedule-icon"><i class="ri-checkbox-blank-circle-fill text-primary"></i></div>
-                     <div class="schedule-text"> <span>Web Design</span>
-                     <span>09:00 to 12:00</span></div>
-                  </li>
-                  <li class="d-flex">
-                     <div class="schedule-icon"><i class="ri-checkbox-blank-circle-fill text-success"></i></div>
-                     <div class="schedule-text"> <span>Participate in Design</span>
-                     <span>09:00 to 12:00</span></div>
-                  </li>
-               </ul>
-            </div>
-         </div>
-      </div>
-      <div class="col-md-9">
-         <div class="iq-card">
-            <div class="iq-card-header d-flex justify-content-between">
-               <div class="iq-header-title">
-                  <h1 class="card-title">Kalender</h1>
-                  <h3> Trage deine Übungsstunden ein</h3>
-               </div>
-               <div class="iq-card-header-toolbar d-flex align-items-center">
-                  <a href="#" class="btn btn-primary" id="add-event-btn"><i class="ri-add-line mr-2"></i>Add Event</a>
-               </div>
-            </div>
-            <div class="iq-card-body">
-               <div id='calendar1'></div>
-            </div>
-         </div>
-      </div>
-   </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal for adding events -->
 <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="addEventModalLabel" aria-hidden="true">
-   <div class="modal-dialog" role="document">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="addEventModalLabel">Add Event</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-               <span aria-hidden="true">&times;</span>
-            </button>
-         </div>
-         <div class="modal-body">
-            <form id="addEventForm">
-               <div class="form-group">
-                  <label for="eventTitle">Event Title</label>
-                  <input type="text" class="form-control" id="eventTitle" required>
-               </div>
-               <div class="form-group">
-                  <label for="eventStart">Start Date</label>
-                  <input type="datetime-local" class="form-control" id="eventStart" required>
-               </div>
-               <div class="form-group">
-                  <label for="eventEnd">End Date</label>
-                  <input type="datetime-local" class="form-control" id="eventEnd">
-               </div>
-               <button type="submit" class="btn btn-primary">Add Event</button>
-            </form>
-         </div>
-      </div>
-   </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEventModalLabel">Event hinzufügen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addEventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title</label>
+                        <input type="text" class="form-control" id="eventTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventStart">Start Date</label>
+                        <input type="datetime-local" class="form-control" id="eventStart" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventEnd">End Date</label>
+                        <input type="datetime-local" class="form-control" id="eventEnd">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -90,68 +91,68 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js'></script>
 <script>
-   document.addEventListener('DOMContentLoaded', function() {
-       var calendarEl = document.getElementById('calendar1');
-       var calendar = new FullCalendar.Calendar(calendarEl, {
-           initialView: 'dayGridMonth',
-           locale: 'de',
-           events: '/termine',
-           editable: true,
-           selectable: true,
-           select: function(info) {
-               $('#addEventModal').modal('show');
-               document.getElementById('eventStart').value = info.startStr;
-               if(info.endStr){
-                   document.getElementById('eventEnd').value = info.endStr;
-               } else {
-                   document.getElementById('eventEnd').value = '';
-               }
-           },
-           eventClick: function(info) {
-               if (confirm("Are you sure you want to delete this event?")) {
-                   fetch('/delete-event', {
-                       method: 'DELETE',
-                       headers: {
-                           'Content-Type': 'application/json'
-                       },
-                       body: JSON.stringify({ id: info.event.id })
-                   }).then(response => response.json())
-                   .then(data => {
-                       if(data.success) {
-                           info.event.remove();
-                       }
-                   });
-               }
-           }
-       });
-       calendar.render();
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar1');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'de',
+            events: '/termine',
+            editable: true,
+            selectable: true,
+            select: function(info) {
+                $('#addEventModal').modal('show');
+                document.getElementById('eventStart').value = info.startStr;
+                if(info.endStr){
+                    document.getElementById('eventEnd').value = info.endStr;
+                } else {
+                    document.getElementById('eventEnd').value = '';
+                }
+            },
+            eventClick: function(info) {
+                if (confirm("Are you sure you want to delete this event?")) {
+                    fetch('/delete-event', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id: info.event.id })
+                    }).then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            info.event.remove();
+                        }
+                    });
+                }
+            }
+        });
+        calendar.render();
 
-       document.getElementById('addEventForm').addEventListener('submit', function(event) {
-           event.preventDefault();
-           var title = document.getElementById('eventTitle').value;
-           var start = document.getElementById('eventStart').value;
-           var end = document.getElementById('eventEnd').value;
+        document.getElementById('addEventForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var title = document.getElementById('eventTitle').value;
+            var start = document.getElementById('eventStart').value;
+            var end = document.getElementById('eventEnd').value;
 
-           fetch('/add-event', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/json'
-               },
-               body: JSON.stringify({
-                   title: title,
-                   start: start,
-                   end: end
-               })
-           }).then(response => response.json())
-           .then(data => {
-               calendar.addEvent(data);
-               $('#addEventModal').modal('hide');
-           });
-       });
+            fetch('/add-event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: title,
+                    start: start,
+                    end: end
+                })
+            }).then(response => response.json())
+            .then(data => {
+                calendar.addEvent(data);
+                $('#addEventModal').modal('hide');
+            });
+        });
 
-       document.getElementById('add-event-btn').addEventListener('click', function() {
-           $('#addEventModal').modal('show');
-       });
-   });
+        document.getElementById('add-event-btn').addEventListener('click', function() {
+            $('#addEventModal').modal('show');
+        });
+    });
 </script>
 {% endblock %}

@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
     notes = db.relationship('Note', backref='user', lazy=True)
     tasks = db.relationship('Task', backref='user', lazy=True)
     goals = db.relationship('Goal', backref='user', lazy=True)
+    events = db.relationship('Event', backref='user', lazy=True)
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,3 +28,11 @@ class Goal(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    start = db.Column(db.DateTime, nullable=False)
+    end = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
