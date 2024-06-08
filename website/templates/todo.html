@@ -3,82 +3,97 @@
 {% block title %}To Do{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-   <div class="row">
-      <!-- To Do List -->
-      <div class="col-md-6">
-         <h1>To Do List</h1>
-         <ul class="list-group">
-            {% for task in tasks %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-               {{ task.description }}
-               <button type="button" class="btn btn-danger btn-sm" onClick="deleteTask('{{ task.id }}')">
-                  <span aria-hidden="true">&times;</span>
-               </button>
-            </li>
-            {% endfor %}
-         </ul>
-         <form method="POST" action="{{ url_for('views.add_task') }}" class="mt-4">
-            <div class="form-group">
-               <label for="newTask">Add Task:</label>
-               <input type="text" id="newTask" name="newTask" class="form-control" required>
+<div class="container-fluid mt-5 background d-flex align-items-center justify-content-center">
+    <div class="content text-center">
+        <h1 class="mb-4">To Do</h1>
+        <div class="row justify-content-center">
+            <!-- To Do List -->
+            <div class="col-md-5">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <i class="fas fa-tasks"></i> To Do List
+                        </h2>
+                        <ul class="list-group">
+                            {% for task in tasks %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ task.description }}
+                                <button type="button" class="btn btn-danger btn-sm" onClick="deleteTask('{{ task.id }}')">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <form method="POST" action="{{ url_for('views.add_task') }}" class="mt-4">
+                            <div class="form-group">
+                                <label for="newTask">Add Task:</label>
+                                <input type="text" id="newTask" name="newTask" class="form-control" required>
+                            </div>
+                            <div align="center">
+                                <button type="submit" class="btn btn-primary">Add Task</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div align="center">
-               <button type="submit" class="btn btn-primary">Add Task</button>
+            <!-- Notes -->
+            <div class="col-md-5">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <i class="fas fa-sticky-note"></i> Notes
+                        </h2>
+                        <ul class="list-group list-group-flush" id="notes">
+                            {% for note in user.notes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ note.data }}
+                                <button type="button" class="btn btn-danger btn-sm" onClick="deleteNote('{{ note.id }}')">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <form method="POST" class="mt-4">
+                            <div class="form-group">
+                                <label for="note">Add Note:</label>
+                                <textarea name="note" id="note" class="form-control" required></textarea>
+                            </div>
+                            <div align="center">
+                                <button type="submit" class="btn btn-primary">Add Note</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-         </form>
-      </div>
-      <!-- Notes -->
-      <div class="col-md-6">
-         <h1>Notes</h1>
-         <ul class="list-group list-group-flush" id="notes">
-            {% for note in user.notes %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-               {{ note.data }}
-               <button type="button" class="btn btn-danger btn-sm" onClick="deleteNote('{{ note.id }}')">
-                  <span aria-hidden="true">&times;</span>
-               </button>
-            </li>
-            {% endfor %}
-         </ul>
-         <form method="POST" class="mt-4">
-            <div class="form-group">
-               <label for="note">Add Note:</label>
-               <textarea name="note" id="note" class="form-control" required></textarea>
-            </div>
-            <div align="center">
-               <button type="submit" class="btn btn-primary">Add Note</button>
-            </div>
-         </form>
-      </div>
-   </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block javascript %}
 <script>
-   function deleteTask(taskId) {
-       fetch("/delete-task", {
-           method: "POST",
-           headers: {
-               "Content-Type": "application/json"
-           },
-           body: JSON.stringify({ taskId: taskId }),
-       }).then((_res) => {
-           window.location.href = "/todo";
-       });
-   }
+    function deleteTask(taskId) {
+        fetch("/delete-task", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ taskId: taskId }),
+        }).then((_res) => {
+            window.location.href = "/todo";
+        });
+    }
 
-   function deleteNote(noteId) {
-       fetch("/delete-note", {
-           method: "POST",
-           headers: {
-               "Content-Type": "application/json"
-           },
-           body: JSON.stringify({ noteId: noteId }),
-       }).then((_res) => {
-           window.location.href = "/todo";
-       });
-   }
+    function deleteNote(noteId) {
+        fetch("/delete-note", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ noteId: noteId }),
+        }).then((_res) => {
+            window.location.href = "/todo";
+        });
+    }
 </script>
 {% endblock %}
