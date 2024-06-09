@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Upload PDF{% endblock %}
+{% block content %}
+<div class="container-fluid mt-5 background d-flex align-items-center justify-content-center">
+    <div class="content text-center">
+        <h1>PDF Hochladen</h1>
+        <div class="d-flex justify-content-center mt-4">
+            <div class="col-md-4 text-center mb-3">
+                <form action="{{ url_for('views.upload_pdf') }}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="pdfFile">Wähle eine PDF-Datei:</label>
+                        <input type="file" class="form-control" id="pdfFile" name="pdfFile" accept=".pdf" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-upload"></i> Hochladen
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="mt-5">
+            <h2>Hochgeladene Dateien</h2>
+            <ul class="list-group">
+                {% for file in files %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('views.uploaded_file', filename=file) }}" target="_blank">{{ file }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

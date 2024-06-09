@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+import os
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, current_app, send_from_directory
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 from .models import Note, Task, Goal, User, Event
 from . import db
 import json
@@ -228,3 +230,38 @@ def add_task():
         db.session.commit()
         flash('Task added successfully!', category='success')
     return redirect(url_for('views.todo'))
+
+# Routen für den PDF-Upload
+@views.route('/upload', methods=['GET', 'POST'])
+@login_required
+def upload():
+    files = os.listdir(current_app.config['UPLOAD_FOLDER'])
+    return render_template('upload.html', user=current_user, files=files)
+
+@views.route('/upload-pdf', methods=['POST'])
+@login_required
+def upload_pdf():
+    if 'pdfFile' not in request.files:
+        flash('No file part', category='error')
+        return redirect(request.url)
+    
+    file = request.files['pdfFile']
+    
+    if file.filename == '':
+        flash('No selected file', category='error')
+        return redirect(request.url)
+    
+    if file and file.filename.endswith('.pdf'):
+        filename = secure_filename(file.filename)
+        upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        file.save(upload_path)
+        flash('File successfully uploaded', category='success')
+        return redirect(url_for('views.upload'))
+    else:
+        flash('Invalid file type. Only PDFs are allowed.', category='error')
+        return redirect(request.url)
+
+@views.route('/uploads/<filename>')
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
