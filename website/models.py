@@ -12,22 +12,34 @@ class User(db.Model, UserMixin):
     goals = db.relationship('Goal', backref='user', lazy=True)
     events = db.relationship('Event', backref='user', lazy=True)
 
+    def __repr__(self):
+        return f'<User {self.email}>'
+
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    def __repr__(self):
+        return f'<Note {self.id} - {self.data[:20]}>'
+
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Task {self.id} - {self.description[:20]}>'
 
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Goal {self.id} - {self.title}>'
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,3 +48,5 @@ class Event(db.Model):
     end = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    def __repr__(self):
+        return f'<Event {self.id} - {self.title} from {self.start} to {self.end}>'

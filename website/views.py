@@ -70,6 +70,20 @@ def delete_event():
         return jsonify(success=True)
     return jsonify(success=False)
 
+@views.route('/get-events', methods=['GET'])
+@login_required
+def get_events():
+    events = Event.query.filter_by(user_id=current_user.id).all()
+    events_data = []
+    for event in events:
+        events_data.append({
+            "id": event.id,
+            "title": event.title,
+            "start": event.start.isoformat(),
+            "end": event.end.isoformat() if event.end else None
+        })
+    return jsonify(events_data)
+
 @views.route('/todo', methods=['GET', 'POST'])
 @login_required
 def todo():
