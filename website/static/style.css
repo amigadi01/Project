@@ -1,5 +1,5 @@
 .background {
-    background-image: url("/bilder/trommel.png");
+    background-image: url("/static/bilder/trommel.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
