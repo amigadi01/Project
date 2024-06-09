@@ -41,11 +41,34 @@ def add_event():
             logging.error("No data received in request")
             return jsonify({"error": "Invalid data"}), 400
         
+        title = data.get('title')
+        start = data.get('start')
+        end = data.get('end')
+        category = data.get('category', 'other')
+
+        if not title or not start:
+            logging.error("Missing required fields")
+            return jsonify({"error": "Missing required fields"}), 400
+
+        try:
+            start_dt = datetime.fromisoformat(start)
+        except ValueError:
+            logging.error("Invalid start date format")
+            return jsonify({"error": "Invalid start date format"}), 400
+
+        end_dt = None
+        if end:
+            try:
+                end_dt = datetime.fromisoformat(end)
+            except ValueError:
+                logging.error("Invalid end date format")
+                return jsonify({"error": "Invalid end date format"}), 400
+
         new_event = Event(
-            title=data['title'],
-            start=datetime.fromisoformat(data['start']),
-            end=datetime.fromisoformat(data.get('end')) if data.get('end') else None,
-            category=data.get('category', 'other'),
+            title=title,
+            start=start_dt,
+            end=end_dt,
+            category=category,
             user_id=current_user.id
         )
         db.session.add(new_event)
