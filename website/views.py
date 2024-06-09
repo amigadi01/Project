@@ -28,48 +28,6 @@ def delete_note():
 def calendar():
     return render_template('calendar.html', user=current_user)
 
-@views.route('/termine')
-@login_required
-def termine():
-    # Diese Route sollte Events aus der Datenbank abrufen
-    events = Event.query.filter_by(user_id=current_user.id).all()
-    event_list = []
-    for event in events:
-        event_data = {
-            "id": event.id,
-            "title": event.title,
-            "start": event.start.isoformat(),
-            "end": event.end.isoformat() if event.end else None
-        }
-        event_list.append(event_data)
-    return jsonify(event_list)
-
-@views.route('/add-event', methods=['POST'])
-@login_required
-def add_event():
-    data = request.get_json()
-    new_event = Event(
-        title=data['title'],
-        start=data['start'],
-        end=data.get('end', None),
-        user_id=current_user.id
-    )
-    db.session.add(new_event)
-    db.session.commit()
-    return jsonify(id=new_event.id, title=new_event.title, start=new_event.start, end=new_event.end)
-
-@views.route('/delete-event', methods=['DELETE'])
-@login_required
-def delete_event():
-    data = request.get_json()
-    event_id = data['id']
-    event = Event.query.get(event_id)
-    if event and event.user_id == current_user.id:
-        db.session.delete(event)
-        db.session.commit()
-        return jsonify(success=True)
-    return jsonify(success=False)
-
 @views.route('/get-events', methods=['GET'])
 @login_required
 def get_events():
@@ -83,6 +41,34 @@ def get_events():
             "end": event.end.isoformat() if event.end else None
         })
     return jsonify(events_data)
+
+@views.route('/add-event', methods=['POST'])
+@login_required
+def add_event():
+    data = request.get_json()
+    print("Received data:", data)  # Debugging Ausgabe
+    new_event = Event(
+        title=data['title'],
+        start=data['start'],
+        end=data.get('end', None),
+        user_id=current_user.id
+    )
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify(id=new_event.id, title=new_event.title, start=new_event.start.isoformat(), end=new_event.end.isoformat() if new_event.end else None)
+
+
+@views.route('/delete-event', methods=['DELETE'])
+@login_required
+def delete_event():
+    data = request.get_json()
+    event_id = data['id']
+    event = Event.query.get(event_id)
+    if event and event.user_id == current_user.id:
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify(success=True)
+    return jsonify(success=False)
 
 @views.route('/todo', methods=['GET', 'POST'])
 @login_required
