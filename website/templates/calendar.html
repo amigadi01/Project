@@ -63,6 +63,14 @@
                         <input type="text" class="form-control" id="eventTitle" name="title" required>
                     </div>
                     <div class="form-group">
+                        <label for="eventCategory">Kategorie</label>
+                        <select class="form-control" id="eventCategory" name="category" required>
+                            <option value="wettspiel">Wettspiel</option>
+                            <option value="uebungsstunden">Übungsstunden</option>
+                            <option value="auftritt">Auftritt</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="eventStart">Start Date</label>
                         <input type="datetime-local" class="form-control" id="eventStart" name="start" required>
                     </div>
@@ -113,6 +121,26 @@
                         }
                     });
                 }
+            },
+            eventContent: function(info) {
+                let categoryColor;
+                switch (info.event.extendedProps.category) {
+                    case 'wettspiel':
+                        categoryColor = 'blue';
+                        break;
+                    case 'uebungsstunden':
+                        categoryColor = 'green';
+                        break;
+                    case 'auftritt':
+                        categoryColor = 'red';
+                        break;
+                    default:
+                        categoryColor = 'gray';
+                }
+                let backgroundColor = categoryColor;
+                return {
+                    html: `<div class="fc-event-main" style="background-color: ${backgroundColor};">${info.event.title}</div>`
+                };
             }
         });
         calendar.render();
@@ -122,6 +150,7 @@
             var title = document.getElementById('eventTitle').value;
             var start = document.getElementById('eventStart').value;
             var end = document.getElementById('eventEnd').value;
+            var category = document.getElementById('eventCategory').value;
 
             fetch('/add-event', {
                 method: 'POST',
@@ -131,13 +160,17 @@
                 body: JSON.stringify({
                     title: title,
                     start: start,
-                    end: end
+                    end: end,
+                    category: category
                 })
             }).then(response => response.json())
             .then(data => {
                 calendar.addEvent(data);
                 addEventToList(data);
                 $('#addEventModal').modal('hide');
+            }).catch(error => {
+                console.error('Error adding event:', error);
+                alert('There was an error adding the event. Please try again.');
             });
         });
 
@@ -153,7 +186,21 @@
 
             var iconDiv = document.createElement('div');
             iconDiv.classList.add('schedule-icon');
-            iconDiv.innerHTML = '<i class="ri-checkbox-blank-circle-fill text-primary"></i>';
+            var iconClass;
+            switch (event.category) {
+                case 'wettspiel':
+                    iconClass = 'text-primary';
+                    break;
+                case 'uebungsstunden':
+                    iconClass = 'text-success';
+                    break;
+                case 'auftritt':
+                    iconClass = 'text-danger';
+                    break;
+                default:
+                    iconClass = 'text-secondary';
+            }
+            iconDiv.innerHTML = `<i class="ri-checkbox-blank-circle-fill ${iconClass}"></i>`;
 
             var textDiv = document.createElement('div');
             textDiv.classList.add('schedule-text');

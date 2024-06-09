@@ -39,7 +39,8 @@ def get_events():
             "id": event.id,
             "title": event.title,
             "start": event.start.isoformat(),
-            "end": event.end.isoformat() if event.end else None
+            "end": event.end.isoformat() if event.end else None,
+            "category": event.category  # Fügt die Kategorie dem Event hinzu
         })
     return jsonify(events_data)
 
@@ -47,16 +48,16 @@ def get_events():
 @login_required
 def add_event():
     data = request.get_json()
-    print("Received data:", data)  # Debugging Ausgabe
     new_event = Event(
         title=data['title'],
         start=data['start'],
         end=data.get('end', None),
+        category=data.get('category', 'other'), 
         user_id=current_user.id
     )
     db.session.add(new_event)
     db.session.commit()
-    return jsonify(id=new_event.id, title=new_event.title, start=new_event.start.isoformat(), end=new_event.end.isoformat() if new_event.end else None)
+    return jsonify(id=new_event.id, title=new_event.title, start=new_event.start.isoformat(), end=new_event.end.isoformat() if new_event.end else None, category=new_event.category)
 
 @views.route('/delete-event', methods=['DELETE'])
 @login_required
