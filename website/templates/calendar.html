@@ -92,143 +92,153 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js'></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar1');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'de',
-            events: '/get-events',
-            editable: true,
-            selectable: true,
-            select: function(info) {
-                $('#addEventModal').modal('show');
-                document.getElementById('eventStart').value = info.startStr;
-                document.getElementById('eventEnd').value = info.endStr || '';
-            },
-            eventClick: function(info) {
-                if (confirm("Are you sure you want to delete this event?")) {
-                    fetch('/delete-event', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ id: info.event.id })
-                    }).then(response => response.json())
-                    .then(data => {
-                        if(data.success) {
-                            info.event.remove();
-                            removeEventFromList(info.event.id);
-                        }
-                    });
-                }
-            },
-            eventContent: function(info) {
-                let categoryColor;
-                switch (info.event.extendedProps.category) {
-                    case 'wettspiel':
-                        categoryColor = 'blue';
-                        break;
-                    case 'uebungsstunden':
-                        categoryColor = 'green';
-                        break;
-                    case 'auftritt':
-                        categoryColor = 'red';
-                        break;
-                    default:
-                        categoryColor = 'gray';
-                }
-                let backgroundColor = categoryColor;
-                return {
-                    html: `<div class="fc-event-main" style="background-color: ${backgroundColor};">${info.event.title}</div>`
-                };
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar1');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'de',
+        events: '/get-events',
+        editable: true,
+        selectable: true,
+        select: function(info) {
+            $('#addEventModal').modal('show');
+            document.getElementById('eventStart').value = info.startStr;
+            document.getElementById('eventEnd').value = info.endStr || '';
+        },
+        eventClick: function(info) {
+            if (confirm("Are you sure you want to delete this event?")) {
+                fetch('/delete-event', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: info.event.id })
+                }).then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        info.event.remove();
+                        removeEventFromList(info.event.id);
+                    }
+                });
             }
-        });
-        calendar.render();
+        },
+        eventContent: function(info) {
+            let categoryColor;
+            switch (info.event.extendedProps.category) {
+                case 'wettspiel':
+                    categoryColor = 'blue';
+                    break;
+                case 'uebungsstunden':
+                    categoryColor = 'green';
+                    break;
+                case 'auftritt':
+                    categoryColor = 'red';
+                    break;
+                default:
+                    categoryColor = 'gray';
+            }
+            let backgroundColor = categoryColor;
+            return {
+                html: `<div class="fc-event-main" style="background-color: ${backgroundColor};">${info.event.title}</div>`
+            };
+        }
+    });
+    calendar.render();
 
-        document.getElementById('addEventForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            var title = document.getElementById('eventTitle').value;
-            var start = document.getElementById('eventStart').value;
-            var end = document.getElementById('eventEnd').value;
-            var category = document.getElementById('eventCategory').value;
+    document.getElementById('addEventForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var title = document.getElementById('eventTitle').value;
+        var start = document.getElementById('eventStart').value;
+        var end = document.getElementById('eventEnd').value;
+        var category = document.getElementById('eventCategory').value;
 
-            fetch('/add-event', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    title: title,
-                    start: start,
-                    end: end,
-                    category: category
-                })
-            }).then(response => response.json())
-            .then(data => {
+        console.log("Submitting event with data:", { title, start, end, category });
+
+        fetch('/add-event', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: title,
+                start: start,
+                end: end,
+                category: category
+            })
+        }).then(response => {
+            console.log("Raw response:", response);
+            return response.json()
+        })
+        .then(data => {
+            console.log("Parsed response data:", data);
+            if (data.id) {
                 calendar.addEvent(data);
                 addEventToList(data);
                 $('#addEventModal').modal('hide');
-            }).catch(error => {
-                console.error('Error adding event:', error);
-                alert('There was an error adding the event. Please try again.');
-            });
-        });
-
-        document.getElementById('add-event-btn').addEventListener('click', function() {
-            $('#addEventModal').modal('show');
-        });
-
-        function addEventToList(event) {
-            var eventsList = document.getElementById('events-list');
-            var li = document.createElement('li');
-            li.classList.add('d-flex');
-            li.setAttribute('data-id', event.id);
-
-            var iconDiv = document.createElement('div');
-            iconDiv.classList.add('schedule-icon');
-            var iconClass;
-            switch (event.category) {
-                case 'wettspiel':
-                    iconClass = 'text-primary';
-                    break;
-                case 'uebungsstunden':
-                    iconClass = 'text-success';
-                    break;
-                case 'auftritt':
-                    iconClass = 'text-danger';
-                    break;
-                default:
-                    iconClass = 'text-secondary';
+            } else {
+                throw new Error('Invalid response data');
             }
-            iconDiv.innerHTML = `<i class="ri-checkbox-blank-circle-fill ${iconClass}"></i>`;
-
-            var textDiv = document.createElement('div');
-            textDiv.classList.add('schedule-text');
-            textDiv.innerHTML = `<span>${event.title}</span><span>${event.start.substring(0, 10)} ${event.start.substring(11, 16)} to ${event.end ? event.end.substring(11, 16) : ''}</span>`;
-
-            li.appendChild(iconDiv);
-            li.appendChild(textDiv);
-            eventsList.appendChild(li);
-        }
-
-        function removeEventFromList(eventId) {
-            var eventsList = document.getElementById('events-list');
-            var eventItems = eventsList.getElementsByTagName('li');
-            for (var i = 0; i < eventItems.length; i++) {
-                if (eventItems[i].getAttribute('data-id') == eventId) {
-                    eventsList.removeChild(eventItems[i]);
-                    break;
-                }
-            }
-        }
-
-        fetch('/get-events')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(event => {
-                    addEventToList(event);
-                });
-            });
+        }).catch(error => {
+            console.error('Error adding event:', error);
+            alert('There was an error adding the event. Please try again.');
+        });
     });
+
+    document.getElementById('add-event-btn').addEventListener('click', function() {
+        $('#addEventModal').modal('show');
+    });
+
+    function addEventToList(event) {
+        var eventsList = document.getElementById('events-list');
+        var li = document.createElement('li');
+        li.classList.add('d-flex');
+        li.setAttribute('data-id', event.id);
+
+        var iconDiv = document.createElement('div');
+        iconDiv.classList.add('schedule-icon');
+        var iconClass;
+        switch (event.category) {
+            case 'wettspiel':
+                iconClass = 'text-primary';
+                break;
+            case 'uebungsstunden':
+                iconClass = 'text-success';
+                break;
+            case 'auftritt':
+                iconClass = 'text-danger';
+                break;
+            default:
+                iconClass = 'text-secondary';
+        }
+        iconDiv.innerHTML = `<i class="ri-checkbox-blank-circle-fill ${iconClass}"></i>`;
+
+        var textDiv = document.createElement('div');
+        textDiv.classList.add('schedule-text');
+        textDiv.innerHTML = `<span>${event.title}</span><span>${event.start.substring(0, 10)} ${event.start.substring(11, 16)} to ${event.end ? event.end.substring(11, 16) : ''}</span>`;
+
+        li.appendChild(iconDiv);
+        li.appendChild(textDiv);
+        eventsList.appendChild(li);
+    }
+
+    function removeEventFromList(eventId) {
+        var eventsList = document.getElementById('events-list');
+        var eventItems = eventsList.getElementsByTagName('li');
+        for (var i = 0; i < eventItems.length; i++) {
+            if (eventItems[i].getAttribute('data-id') == eventId) {
+                eventsList.removeChild(eventItems[i]);
+                break;
+            }
+        }
+    }
+
+    fetch('/get-events')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(event => {
+                addEventToList(event);
+            });
+        });
+});
 </script>
 {% endblock %}

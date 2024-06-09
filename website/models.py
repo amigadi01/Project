@@ -43,11 +43,8 @@ class Goal(db.Model):
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(150))
-    start = db.Column(db.DateTime, nullable=False)
-    end = db.Column(db.DateTime)
-    category = db.Column(db.String(50), nullable=False)  # Neue Kategorie-Spalte
+    title = db.Column(db.String(100))
+    start = db.Column(db.DateTime)
+    end = db.Column(db.DateTime, nullable=True)
+    category = db.Column(db.String(50))  # Ensure this field is present
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return f'<Event {self.id} - {self.title} from {self.start} to {self.end}>'

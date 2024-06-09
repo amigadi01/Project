@@ -3,7 +3,9 @@ from flask_login import login_required, current_user
 from .models import Note, Task, Goal, User, Event
 from . import db
 import json
-import random  # Korrekt importieren
+import random
+import logging
+from datetime import datetime
 
 views = Blueprint('views', __name__)
 
@@ -29,6 +31,31 @@ def delete_note():
 def calendar():
     return render_template('calendar.html', user=current_user)
 
+@views.route('/add-event', methods=['POST'])
+@login_required
+def add_event():
+    try:
+        data = request.get_json()
+        logging.info(f"Received data: {data}")
+        if not data:
+            logging.error("No data received in request")
+            return jsonify({"error": "Invalid data"}), 400
+        
+        new_event = Event(
+            title=data['title'],
+            start=datetime.fromisoformat(data['start']),
+            end=datetime.fromisoformat(data.get('end')) if data.get('end') else None,
+            category=data.get('category', 'other'),
+            user_id=current_user.id
+        )
+        db.session.add(new_event)
+        db.session.commit()
+        logging.info(f"Event added: {new_event}")
+        return jsonify(id=new_event.id, title=new_event.title, start=new_event.start.isoformat(), end=new_event.end.isoformat() if new_event.end else None, category=new_event.category)
+    except Exception as e:
+        logging.error(f"Error adding event: {str(e)}")
+        return jsonify({"error": "There was an error adding the event"}), 500
+
 @views.route('/get-events', methods=['GET'])
 @login_required
 def get_events():
@@ -40,24 +67,9 @@ def get_events():
             "title": event.title,
             "start": event.start.isoformat(),
             "end": event.end.isoformat() if event.end else None,
-            "category": event.category  # Fügt die Kategorie dem Event hinzu
+            "category": event.category
         })
     return jsonify(events_data)
-
-@views.route('/add-event', methods=['POST'])
-@login_required
-def add_event():
-    data = request.get_json()
-    new_event = Event(
-        title=data['title'],
-        start=data['start'],
-        end=data.get('end', None),
-        category=data.get('category', 'other'), 
-        user_id=current_user.id
-    )
-    db.session.add(new_event)
-    db.session.commit()
-    return jsonify(id=new_event.id, title=new_event.title, start=new_event.start.isoformat(), end=new_event.end.isoformat() if new_event.end else None, category=new_event.category)
 
 @views.route('/delete-event', methods=['DELETE'])
 @login_required
