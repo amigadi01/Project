@@ -31,6 +31,22 @@ def delete_note():
 def calendar():
     return render_template('calendar.html', user=current_user)
 
+@views.route('/get-events', methods=['GET'])
+@login_required
+def get_events():
+    events = Event.query.filter_by(user_id=current_user.id).all()
+    events_data = []
+    for event in events:
+        events_data.append({
+            "id": event.id,
+            "title": event.title,
+            "start": event.start.isoformat(),
+            "end": event.end.isoformat() if event.end else None,
+            "category": event.category
+        })
+    logging.info(f"Events fetched: {events_data}")
+    return jsonify(events_data)
+
 @views.route('/add-event', methods=['POST'])
 @login_required
 def add_event():
@@ -78,21 +94,6 @@ def add_event():
     except Exception as e:
         logging.error(f"Error adding event: {str(e)}")
         return jsonify({"error": "There was an error adding the event"}), 500
-
-@views.route('/get-events', methods=['GET'])
-@login_required
-def get_events():
-    events = Event.query.filter_by(user_id=current_user.id).all()
-    events_data = []
-    for event in events:
-        events_data.append({
-            "id": event.id,
-            "title": event.title,
-            "start": event.start.isoformat(),
-            "end": event.end.isoformat() if event.end else None,
-            "category": event.category
-        })
-    return jsonify(events_data)
 
 @views.route('/delete-event', methods=['DELETE'])
 @login_required

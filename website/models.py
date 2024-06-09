@@ -43,8 +43,8 @@ class Goal(db.Model):
 
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    start = db.Column(db.DateTime)
+    title = db.Column(db.String(100), nullable=False)
+    start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=True)
-    category = db.Column(db.String(50))  # Ensure this field is present
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    category = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
