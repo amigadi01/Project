@@ -33,6 +33,8 @@ def delete_note():
 def calendar():
     return render_template('calendar.html', user=current_user)
 
+
+
 @views.route('/get-events', methods=['GET'])
 @login_required
 def get_events():
@@ -96,6 +98,7 @@ def add_event():
     except Exception as e:
         logging.error(f"Error adding event: {str(e)}")
         return jsonify({"error": "There was an error adding the event"}), 500
+
 
 @views.route('/delete-event', methods=['DELETE'])
 @login_required

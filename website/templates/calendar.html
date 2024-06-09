@@ -1,253 +1,146 @@
 {% extends "base.html" %}
-
-{% block title %}Calendar{% endblock %}
-
+{% block title %}Kalender{% endblock %}
 {% block content %}
-<div class="container-fluid mt-5 background d-flex align-items-center justify-content-center">
-    <div class="content text-center">
-        <h1 class="mb-4">Kalender</h1>
+<div class="container-fluid mt-5 background d-flex align-items-center justify-content-center" style="position: relative;">
+    <div class="content bg-light p-4 rounded" style="background: rgba(255, 255, 255, 0.8);">
         <div class="row justify-content-center">
             <div class="col-md-3">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <input type="text" class="flatpicker d-none">
-                    </div>
-                </div>
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between">
-                        <div class="header-title">
-                            <h4 class="card-title"><i class="fas fa-calendar-check"></i> Deine Termine</h4>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <ul id="events-list" class="m-0 p-0 today-schedule">
-                            <!-- Events werden hier dynamisch eingefügt -->
-                        </ul>
-                    </div>
-                </div>
+                <h2>Termine</h2>
+                <ul class="list-group" id="event-list">
+                    <!-- Dynamisch hinzugefügte Termine erscheinen hier -->
+                </ul>
             </div>
             <div class="col-md-9">
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between">
-                        <div class="header-title">
-                            <h1 class="card-title"><i class="fas fa-calendar-alt"></i> Kalender</h1>
-                            <h3>Trage deine Übungsstunden ein</h3>
-                        </div>
-                        <div class="card-header-toolbar d-flex align-items-center">
-                            <button class="btn btn-primary" id="add-event-btn"><i class="ri-add-line mr-2"></i>Event hinzufügen</button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id='calendar1'></div>
-                    </div>
-                </div>
+                <div id='calendar'></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal for adding events -->
-<div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="addEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addEventModalLabel">Event hinzufügen</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addEventForm">
-                    <div class="form-group">
-                        <label for="eventTitle">Event Title</label>
-                        <input type="text" class="form-control" id="eventTitle" name="title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventCategory">Kategorie</label>
-                        <select class="form-control" id="eventCategory" name="category" required>
-                            <option value="wettspiel">Wettspiel</option>
-                            <option value="uebungsstunden">Übungsstunden</option>
-                            <option value="auftritt">Auftritt</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventStart">Start Date</label>
-                        <input type="datetime-local" class="form-control" id="eventStart" name="start" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventEnd">End Date</label>
-                        <input type="datetime-local" class="form-control" id="eventEnd" name="end">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Event</button>
-                </form>
-            </div>
-        </div>
+<!-- Modal for Adding Events -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventModalLabel">Neuen Termin hinzufügen</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="event-form">
+          <div class="mb-3">
+            <label for="event-title" class="form-label">Titel</label>
+            <input type="text" class="form-control" id="event-title" required>
+          </div>
+          <div class="mb-3">
+            <label for="event-date" class="form-label">Datum</label>
+            <input type="date" class="form-control" id="event-date" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Hinzufügen</button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
-{% endblock %}
 
-{% block javascript %}
-<!-- Full calendar -->
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js'></script>
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar1');
-    if (calendarEl) {
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'de',
-            events: '/get-events',
-            editable: true,
-            selectable: true,
-            select: function(info) {
-                $('#addEventModal').modal('show');
-                document.getElementById('eventStart').value = info.startStr;
-                document.getElementById('eventEnd').value = info.endStr || '';
-            },
-            eventClick: function(info) {
-                if (confirm("Are you sure you want to delete this event?")) {
-                    fetch('/delete-event', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ id: info.event.id })
-                    }).then(response => response.json())
-                    .then(data => {
-                        if(data.success) {
-                            info.event.remove();
-                            removeEventFromList(info.event.id);
-                        }
-                    });
-                }
-            },
-            eventContent: function(info) {
-                let categoryColor;
-                switch (info.event.extendedProps.category) {
-                    case 'wettspiel':
-                        categoryColor = 'blue';
+    var calendarEl = document.getElementById('calendar');
+    var eventList = document.getElementById('event-list');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        editable: true,
+        selectable: true,
+        events: JSON.parse(localStorage.getItem('events')) || [], // Load events from localStorage
+        dateClick: function(info) {
+            // Open the modal to add event
+            var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            document.getElementById('event-date').value = info.dateStr;
+            modal.show();
+        },
+        eventClick: function(info) {
+            if (confirm("Wollen Sie diesen Termin löschen?")) {
+                info.event.remove();
+                // Remove from event list and update localStorage
+                var items = eventList.getElementsByTagName('li');
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].dataset.eventId == info.event.id) {
+                        items[i].remove();
                         break;
-                    case 'uebungsstunden':
-                        categoryColor = 'green';
-                        break;
-                    case 'auftritt':
-                        categoryColor = 'red';
-                        break;
-                    default:
-                        categoryColor = 'gray';
+                    }
                 }
-                let backgroundColor = categoryColor;
-                return {
-                    html: `<div class="fc-event-main" style="background-color: ${backgroundColor};">${info.event.title}</div>`
-                };
-            }
-        });
-        calendar.render();
-        console.log('Calendar initialized');
-
-        document.getElementById('addEventForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            var title = document.getElementById('eventTitle').value;
-            var start = document.getElementById('eventStart').value;
-            var end = document.getElementById('eventEnd').value;
-            var category = document.getElementById('eventCategory').value;
-
-            console.log("Submitting event with data:", { title, start, end, category });
-
-            fetch('/add-event', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    title: title,
-                    start: start,
-                    end: end,
-                    category: category
-                })
-            }).then(response => {
-                console.log("Raw response:", response);
-                return response.json();
-            })
-            .then(data => {
-                console.log("Parsed response data:", data);
-                if (data.id) {
-                    calendar.addEvent(data);
-                    addEventToList(data);
-                    $('#addEventModal').modal('hide');
-                } else {
-                    throw new Error('Invalid response data');
-                }
-            }).catch(error => {
-                console.error('Error adding event:', error);
-                alert('There was an error adding the event. Please try again.');
-            });
-        });
-
-        document.getElementById('add-event-btn').addEventListener('click', function() {
-            $('#addEventModal').modal('show');
-        });
-
-        function addEventToList(event) {
-            var eventsList = document.getElementById('events-list');
-            var li = document.createElement('li');
-            li.classList.add('d-flex');
-            li.setAttribute('data-id', event.id);
-
-            var iconDiv = document.createElement('div');
-            iconDiv.classList.add('schedule-icon');
-            var iconClass;
-            switch (event.category) {
-                case 'wettspiel':
-                    iconClass = 'text-primary';
-                    break;
-                case 'uebungsstunden':
-                    iconClass = 'text-success';
-                    break;
-                case 'auftritt':
-                    iconClass = 'text-danger';
-                    break;
-                default:
-                    iconClass = 'text-secondary';
-            }
-            iconDiv.innerHTML = `<i class="ri-checkbox-blank-circle-fill ${iconClass}"></i>`;
-
-            var textDiv = document.createElement('div');
-            textDiv.classList.add('schedule-text');
-            textDiv.innerHTML = `<span>${event.title}</span><span>${event.start.substring(0, 10)} ${event.start.substring(11, 16)} to ${event.end ? event.end.substring(11, 16) : ''}</span>`;
-
-            li.appendChild(iconDiv);
-            li.appendChild(textDiv);
-            eventsList.appendChild(li);
-        }
-
-        function removeEventFromList(eventId) {
-            var eventsList = document.getElementById('events-list');
-            var eventItems = eventsList.getElementsByTagName('li');
-            for (var i = 0; i < eventItems.length; i++) {
-                if (eventItems[i].getAttribute('data-id') == eventId) {
-                    eventsList.removeChild(eventItems[i]);
-                    break;
-                }
+                saveEvents();
             }
         }
+    });
 
-        fetch('/get-events')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Fetched events:", data);
-                data.forEach(event => {
-                    calendar.addEvent(event);
-                    addEventToList(event);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching events:', error);
+    calendar.render();
+
+    document.getElementById('event-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var eventTitle = document.getElementById('event-title').value;
+        var eventDate = document.getElementById('event-date').value;
+
+        if (eventTitle && eventDate) {
+            var eventId = 'event-' + new Date().getTime();
+            calendar.addEvent({
+                id: eventId,
+                title: eventTitle,
+                start: eventDate,
+                allDay: true
             });
-    } else {
-        console.error("calendar1 div not found");
+
+            var listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.dataset.eventId = eventId;
+            listItem.innerHTML = `${eventTitle} - ${eventDate} <button class="btn btn-danger btn-sm delete-event">Löschen</button>`;
+            eventList.appendChild(listItem);
+
+            var modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+            modal.hide();
+            document.getElementById('event-form').reset();
+
+            saveEvents();
+        }
+    });
+
+    eventList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-event')) {
+            var eventId = e.target.parentElement.dataset.eventId;
+            var event = calendar.getEventById(eventId);
+            if (event) {
+                event.remove();
+            }
+            e.target.parentElement.remove();
+            saveEvents();
+        }
+    });
+
+    // Load events into the list
+    loadEventList();
+
+    function saveEvents() {
+        var events = calendar.getEvents().map(function(event) {
+            return {
+                id: event.id,
+                title: event.title,
+                start: event.startStr,
+                allDay: event.allDay
+            };
+        });
+        localStorage.setItem('events', JSON.stringify(events));
+    }
+
+    function loadEventList() {
+        var events = JSON.parse(localStorage.getItem('events')) || [];
+        events.forEach(function(event) {
+            var listItem = document.createElement('li');
+            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.dataset.eventId = event.id;
+            listItem.innerHTML = `${event.title} - ${event.start} <button class="btn btn-danger btn-sm delete-event">Löschen</button>`;
+            eventList.appendChild(listItem);
+        });
     }
 });
 </script>
