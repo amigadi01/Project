@@ -13,7 +13,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI', 'sqlite:///your_database.db')
 
     db.init_app(app)
-    migrate.init_app(app, db)  # Initialisiere Flask-Migrate
+    migrate.init_app(app, db) 
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
