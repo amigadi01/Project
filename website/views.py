@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from .models import Note, Task, Goal, User, Event  # Stelle sicher, dass das Event-Modell importiert ist
+from .models import Note, Task, Goal, User, Event
 from . import db
 import json
+import random  # Korrekt importieren
 
 views = Blueprint('views', __name__)
 
@@ -56,7 +57,6 @@ def add_event():
     db.session.add(new_event)
     db.session.commit()
     return jsonify(id=new_event.id, title=new_event.title, start=new_event.start.isoformat(), end=new_event.end.isoformat() if new_event.end else None)
-
 
 @views.route('/delete-event', methods=['DELETE'])
 @login_required
@@ -119,7 +119,30 @@ def profile():
         return redirect(url_for('views.profile'))
 
     goals = Goal.query.filter_by(user_id=current_user.id).all()
-    return render_template('profile.html', user=current_user, goals=goals)
+
+    # Load recent activities
+    activities = [
+        "Added a new note",
+        "Completed a task",
+        "Achieved a goal",
+    ]
+
+    # Load a random motivational quote
+    quotes = [
+        {"text": "The only way to do great work is to love what you do.", "author": "Steve Jobs"},
+        {"text": "The journey of a thousand miles begins with one step.", "author": "Lao Tzu"},
+        {"text": "Believe you can and you're halfway there.", "author": "Theodore Roosevelt"},
+    ]
+    quote = random.choice(quotes)
+
+    # Load statistics
+    statistics = {
+        "completed_tasks": Task.query.filter_by(user_id=current_user.id).count(),
+        "achieved_goals": Goal.query.filter_by(user_id=current_user.id).count(),
+        "created_notes": Note.query.filter_by(user_id=current_user.id).count(),
+    }
+
+    return render_template('profile.html', user=current_user, goals=goals, activities=activities, quote=quote, statistics=statistics)
 
 @views.route('/delete-goal', methods=['POST'])
 @login_required

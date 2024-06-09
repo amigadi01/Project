@@ -3,58 +3,98 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-5 background d-flex align-items-center justify-content-center">
-    <div class="content text-center">
-        <h1>Profile</h1>
-
-        <!-- Description Section -->
-        <div class="mb-4">
-            <p class="lead">{{ user.description }}</p>
-        </div>
-        
-        <!-- User Information Section -->
-        <div class="card mb-4 mt-4">
-            <div class="card-body text-center">
-                <h2 class="card-title">{{ user.name }}</h2>
-                <p class="card-text">{{ user.description }}</p>
-            </div>
-        </div>
-
-        <!-- Personal Goals Section -->
-        <h2 class="text-center mb-4">Personal Goals</h2>
-        <div class="row">
-            {% for goal in goals %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ goal.title }}</h5>
-                        <p class="card-text">{{ goal.description }}</p>
-                        <button type="button" class="btn btn-danger btn-sm" onClick="deleteGoal('{{ goal.id }}')">
-                            <span aria-hidden="true">&times;</span> Delete
-                        </button>
-                    </div>
+<div class="container mt-5 background">
+    <div class="row">
+        <!-- Statistics Section -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Statistics</h2>
+                    <p class="card-text">Completed Tasks: {{ statistics.completed_tasks }}</p>
+                    <p class="card-text">Achieved Goals: {{ statistics.achieved_goals }}</p>
+                    <p class="card-text">Created Notes: {{ statistics.created_notes }}</p>
                 </div>
             </div>
-            {% endfor %}
+
+            <!-- Motivational Quotes Section -->
+            <div class="card mt-4 mb-4">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Motivational Quote</h2>
+                    <blockquote class="blockquote">
+                        <p class="mb-0">{{ quote.text }}</p>
+                        <footer class="blockquote-footer">{{ quote.author }}</footer>
+                    </blockquote>
+                </div>
+            </div>
         </div>
 
-        <!-- Add New Goal Section -->
-        <div class="card mt-4">
-            <div class="card-body">
-                <h5 class="card-title">Add a New Goal</h5>
-                <form method="POST" action="{{ url_for('views.profile') }}">
-                    <div class="form-group">
-                        <label for="title">Goal Title:</label>
-                        <input type="text" id="title" name="title" class="form-control" required>
+        <!-- Main Content Section -->
+        <div class="col-md-9">
+            <div class="content text-center">
+                <h1>Profile</h1>
+
+                <!-- Description Section -->
+                <div class="mb-4">
+                    <p class="lead">{{ user.description }}</p>
+                </div>
+                
+                <!-- User Information Section -->
+                <div class="card mb-4 mt-4">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">{{ user.first_name }}</h2>
+                        <p class="card-text">{{ user.description }}</p>
                     </div>
-                    <div class="form-group">
-                        <label for="description">Goal Description:</label>
-                        <textarea name="description" id="description" class="form-control" required></textarea>
+                </div>
+
+                <!-- Recent Activities Section -->
+                <h2 class="text-center mb-4">Recent Activities</h2>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for activity in activities %}
+                            <li class="list-group-item">{{ activity }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Add Goal</button>
+                </div>
+
+                <!-- Personal Goals Section -->
+                <h2 class="text-center mb-4">Personal Goals</h2>
+                <div class="row">
+                    {% for goal in goals %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ goal.title }}</h5>
+                                <p class="card-text">{{ goal.description }}</p>
+                                <button type="button" class="btn btn-danger btn-sm" onClick="deleteGoal('{{ goal.id }}')">
+                                    <span aria-hidden="true">&times;</span> Delete
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                    {% endfor %}
+                </div>
+
+                <!-- Add New Goal Section -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Add a New Goal</h5>
+                        <form method="POST" action="{{ url_for('views.profile') }}">
+                            <div class="form-group">
+                                <label for="title">Goal Title:</label>
+                                <input type="text" id="title" name="title" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Goal Description:</label>
+                                <textarea name="description" id="description" class="form-control" required></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Add Goal</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
