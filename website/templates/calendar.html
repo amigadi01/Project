@@ -2,15 +2,15 @@
 {% block title %}Kalender{% endblock %}
 {% block content %}
 <div class="container-fluid mt-5 background d-flex align-items-center justify-content-center" style="position: relative;">
-    <div class="content bg-light p-4 rounded" style="background: rgba(255, 255, 255, 0.8);">
+    <div class="content bg-light p-4 rounded w-100" style="background: rgba(255, 255, 255, 0.8);">
         <div class="row justify-content-center">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <h2>Termine</h2>
                 <ul class="list-group" id="event-list">
                     <!-- Dynamisch hinzugefügte Termine erscheinen hier -->
                 </ul>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div id='calendar'></div>
             </div>
         </div>
@@ -27,11 +27,11 @@
       </div>
       <div class="modal-body">
         <form id="event-form">
-          <div class="mb-3">
+          <div class="mb-5">
             <label for="event-title" class="form-label">Titel</label>
             <input type="text" class="form-control" id="event-title" required>
           </div>
-          <div class="mb-3">
+          <div class="mb-5">
             <label for="event-date" class="form-label">Datum</label>
             <input type="date" class="form-control" id="event-date" required>
           </div>

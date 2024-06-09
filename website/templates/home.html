@@ -2,20 +2,20 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <div class="container-fluid mt-5 background d-flex align-items-center justify-content-center">
-    <div class="content text-center">
+    <div class="content text-center w-100">
         <h1>Drum Tracker</h1>
         <div class="d-flex justify-content-center mt-4">
-            <div class="col-md-4 text-center mb-3">
+            <div class="col-md-3 text-center mb-3">
                 <a href="{{ url_for('views.todo') }}" class="btn btn-primary btn-lg btn-block">
                     <i class="fas fa-tasks"></i> To-Do's
                 </a>
             </div>
-            <div class="col-md-4 text-center mb-3">
+            <div class="col-md-3 text-center mb-3">
                 <a href="{{ url_for('views.calendar') }}" class="btn btn-primary btn-lg btn-block">
                     <i class="fas fa-calendar-alt"></i> Kalender
                 </a>
             </div>
-            <div class="col-md-4 text-center mb-3">
+            <div class="col-md-3 text-center mb-3">
                 <a href="{{ url_for('views.wettspiel') }}" class="btn btn-primary btn-lg btn-block">
                     <i class="fas fa-trophy"></i> Wettspiel
                 </a>
@@ -24,3 +24,4 @@
     </div>
 </div>
 {% endblock %}
+s
